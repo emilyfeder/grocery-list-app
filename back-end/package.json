@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "knex": "^2.5.1",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "name": "grocery-list-back-end",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "start-watch": "nodemon src/index.js --inspect=0.0.0.0:9229",
+    "start-wait-debugger": "nodemon src/index.js --inspect-brk=0.0.0.0:9229"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}

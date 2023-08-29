@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  back-end:
+    build: './back-end'
+    command: npm run start-watch
+    environment:
+      - DATABASE_DB=grocery_list_app
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=/run/secrets/db_password
+      - DATABASE_HOST=db
+      - NODE_ENV=development
+    ports:
+      - 80:80
+      - 9229:9229
+      - 9230:9230
+    secrets:
+      - db_password
+    volumes:
+      - ./back-end/src:/app/src:ro
+      - ./back-end/package.json:/app/package.json
+      - ./back-end/package-lock.json:/app/package-lock.json
+      - back-notused:/opt/app/node_modules
+    networks:
+      - public
+      - private
+    depends_on:
+      - db
+  db:
+    build: './db'
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    secrets:
+      - db_password
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - private
+    environment:
+      - MARIADB_USER=root
+      - MARIADB_DATABASE=grocery_list_app
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_password
+  front-end:
+    build: ./front-end
+    ports:
+        - 3000:80
+    volumes:
+        - ./front-end/src:/app/src
+        - /app/node_modules
+    depends_on:
+        - back-end
+networks:
+  public:
+  private:
+volumes:
+  back-notused:
+  db-data:
+secrets:
+  db_password:
+    file: db/password.txt
+
