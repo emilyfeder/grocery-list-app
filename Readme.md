@@ -1,3 +1,8 @@
+# Overview
+Author: Emily Feder <emilyafeder@gmail.com>
+
+This is a sample Grocery List Application using Docker, node.js, express.js, React, and mysql/mariadb.
+
 # How to Run
 
 1. First install [docker](https://docs.docker.com/desktop/) on your machine.
