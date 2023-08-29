@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { listCategories, listItems, postItem } from './serverActions';
+import { listCategories, listItems, postItem, postMarkItemComplete, postMarkItemUncomplete } from './serverActions';
 
 async function getInitialData() {
     const [categories_result, list_items_result] = await Promise.all([
@@ -27,6 +27,16 @@ export function useRootStore() {
         });
     }, []);
 
+    const replaceItem = (replacementItem) => {
+        setListItems(listItems.map((item) => {
+            if (replacementItem.id === item.id) {
+                return replacementItem;
+            } else {
+                return item;
+            }
+        }));
+    }
+
     const addItem = async (text, categoryId) => {
         let quantity;
         const quantityMatch = text.match(/^([\d]{1,5})\s*\b(.*)/);
@@ -38,20 +48,27 @@ export function useRootStore() {
         const result = await postItem({name, categoryId, quantity});
         if (result.newItem) {
             setListItems([...listItems, result.newItem]);
-        } else {
-            //replace existing item
-            setListItems(listItems.map((item) => {
-                if (result.existingItem && result.existingItem.id === item.id) {
-                    return result.existingItem;
-                } else {
-                    return item;
-                }
-            }));
+        } else if (result.existingItem) {
+            replaceItem(result.existingItem)
         }
     }
 
     const getCategoryById = (categoryId) => {
         return categories.find((cat) => cat.id === categoryId);
+    }
+
+    const markItemComplete = async (itemId) => {
+        const result = await postMarkItemComplete(itemId);
+        if (result.item) {
+            replaceItem(result.item);
+        }
+    }
+
+    const markItemUncomplete = async (itemId) => {
+        const result = await postMarkItemUncomplete(itemId);
+        if (result.item) {
+            replaceItem(result.item);
+        }
     }
 
     return {
@@ -60,76 +77,8 @@ export function useRootStore() {
         listItems,
         defaultCategory,
         addItem,
-        getCategoryById
+        getCategoryById,
+        markItemComplete,
+        markItemUncomplete
     }
 }
-
-/*
-const Category = types.model({
-    id: types.identifierNumber,
-    name: types.string
-});
-
-const ListItem = types
-    .model({
-        id: types.identifierNumber,
-        categoryId: types.reference(Category),
-        name: types.string,
-        completed: false,
-        quantity: types.maybe(types.number)
-    })
-    .actions((self) => ({
-        toggle() {
-            self.completed = !self.completed;
-        }
-    }));
-
-
-export const RootStore = types
-    .model({
-        listItems: types.array(ListItem),
-        categories: types.array(Category)
-    })
-    .views((self) => ({
-        get defaultCategory() {
-            return self.categories.find((cat) => cat.name === 'other');
-        },
-        getCategoryById(categoryId) {
-            return self.categories.find((cat) => cat.id === categoryId);
-        }
-    })
-    )
-    .actions((self) => ({
-        initialize: flow(function* () {
-            const items_result = yield listItems();
-            const categories_result = yield listCategories();
-            applySnapshot(self, preProcessSnapshot({
-                listItems: items_result.items || self.items,
-                categories: categories_result.categories || self.categories
-            }));
-        }),
-        addItem: flow(function* (text, categoryId) {
-            let quantity;
-            const quantityMatch = text.match(/^([\d]{1,5})\s*\b(.*)/);
-            if (quantityMatch) {
-                quantity = parseInt(quantityMatch[1]);
-                text = quantityMatch[2]
-            }
-            const name = text.trim();
-            const result = yield postItem({name, categoryId, quantity});
-            self.listItems.unshift(result.newItem);
-        })
-    }));
-
-export function preProcessSnapshot(snapshot) {
-    const modifiedSnapshot = {
-        listItems: snapshot.listItems.map((item) => {
-            return {
-                ...item,
-                completed: Boolean(item.completed),
-                quantity: item.quantity === null ? undefined : item.quantity
-            };
-        })
-    }
-    return modifiedSnapshot;
-}*/

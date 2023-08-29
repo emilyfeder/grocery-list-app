@@ -4,7 +4,6 @@ The following tools make up the stack for this front-end application:
 
 [Create React App](https://github.com/facebook/create-react-app) - bootstrapped the app
 [MaterialUI](https://mui.com/) - Library of UI Components
-Mobx-state-tree
 
 ## Available Scripts
 

@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
-import { List, ListItem, ListItemText, ListSubheader } from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import { capitalize } from '@mui/material/utils'
+import CompleteIcon from '@mui/icons-material/HighlightOff'
+import RestoreIcon from '@mui/icons-material/RestoreFromTrash';
 import { useRootStoreContext } from '../data';
+import styled from '@emotion/styled';
 
 export function GroceryListItems() {
     const store = useRootStoreContext();
@@ -22,6 +25,14 @@ export function GroceryListItems() {
         return grouped;
     }, [store.listItems]);
 
+    const handleComplete = (item) => {
+        if (!item.completed) {
+            store.markItemComplete(item.id);
+        } else {
+            store.markItemUncomplete(item.id);
+        }
+    };
+
     const renderListItems = () => {
         if (!store.listItems.length) {
             return (
@@ -37,8 +48,17 @@ export function GroceryListItems() {
                             <ListSubheader>{capitalize(category.name)}</ListSubheader>
                         {
                             items.map((item) => (
-                                <ListItem key={`item-${categoryId}-${item.id}`}>
-                                    <ListItemText primary={`${item.quantity ? `${item.quantity} ` : ''}${item.name}`} />
+                                <ListItem disablePadding key={`item-${categoryId}-${item.id}`}>
+                                    <ListItemButton onClick={() => {
+                                        handleComplete(item);
+                                    }}>
+                                        <ListItemIcon>
+                                            {
+                                                item.completed ? <RestoreIcon/> : <CompleteIcon/>
+                                            }
+                                        </ListItemIcon>
+                                    </ListItemButton>
+                                    <StyledListItemText completed={item.completed} primary={`${item.quantity ? `${item.quantity} ` : ''}${item.name}`} />
                                 </ListItem>
                             ))
                         }
@@ -57,3 +77,9 @@ export function GroceryListItems() {
         </List>
     )
 }
+
+const StyledListItemText = styled(ListItemText)`
+    ${p => p.completed && `
+        text-decoration: line-through;
+    `}
+`;

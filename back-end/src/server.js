@@ -53,4 +53,16 @@ app.post("/items/complete", async function(req, res) {
     });
 });
 
+app.post("/items/uncomplete", async function(req, res) {
+    const {itemId} = req.body;
+    if (!itemId) {
+       res.status(400).send('Bad Request - `itemId` is a required param');
+    }
+    await database.markItemUncomplete(itemId);
+    const item = await database.getItemById(itemId);
+    res.json({
+        item
+    });
+});
+
 module.exports = app;

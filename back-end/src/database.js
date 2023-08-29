@@ -61,6 +61,10 @@ async function markItemComplete(itemId) {
   return updateItemById(itemId, {completed: 1});
 }
 
+async function markItemUncomplete(itemId) {
+  return updateItemById(itemId, {completed: 0});
+}
+
 async function listItems(limit = 500) {
   return db.select('*').from('items').limit(limit);
 }
@@ -71,5 +75,6 @@ module.exports = {
   getItemById,
   listCategories,
   listItems,
-  markItemComplete
+  markItemComplete,
+  markItemUncomplete
 };
