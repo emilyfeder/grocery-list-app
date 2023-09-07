@@ -57,21 +57,20 @@ export function NewItemForm() {
 const FormRow = styled(Flex)`
     flex-direction: 'row';
     margin: 10px;
-
-    & input {
-        margin: 10px;
-    }
 `;
 
 const ItemInput = styled(TextField)`
     flex-basis: 50%;
+    margin: 10px;
 `;
 
 const CategoryInput = styled(Select)`
     flex-basis: 40%;
+    margin: 10px;
 `;
 
 const SubmitButton = styled(Button)`
     flex-basis: 10%;
+    margin: 10px;
 `;
 

@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import { capitalize } from '@mui/material/utils'
 import CompleteIcon from '@mui/icons-material/HighlightOff'
 import RestoreIcon from '@mui/icons-material/RestoreFromTrash';
 import { useRootStoreContext } from '../data';
-import styled from '@emotion/styled';
+import { Flex } from './Flex';
 
 export function GroceryListItems() {
     const store = useRootStoreContext();
@@ -43,9 +44,9 @@ export function GroceryListItems() {
             for (const [categoryId, items] of Object.entries(groupedListItems)) {
                 const category = store.getCategoryById(parseInt(categoryId));
                 renderedItems.push(
-                    <li key={categoryId}>
-                        <ul>
-                            <ListSubheader>{capitalize(category.name)}</ListSubheader>
+                    <CategorySection key={categoryId}>
+                        <CategorySublist>
+                            <CategorySublistHeader>{capitalize(category.name)}</CategorySublistHeader>
                         {
                             items.map((item) => (
                                 <ListItem disablePadding key={`item-${categoryId}-${item.id}`}>
@@ -62,21 +63,38 @@ export function GroceryListItems() {
                                 </ListItem>
                             ))
                         }
-                        </ul>
-                    </li>
+                        </CategorySublist>
+                    </CategorySection>
                 )
             }
             return renderedItems;
         }
     }
     return (
-        <List>
-            {
-                renderListItems()
-            }
-        </List>
+        <GroceryListContainer>
+            <List>
+                {
+                    renderListItems()
+                }
+            </List>
+        </GroceryListContainer>
     )
 }
+
+const GroceryListContainer = styled(Flex)`
+`;
+
+const CategorySection = styled.li`
+`;
+
+const CategorySublist = styled.ul`
+    display: flex;
+    flex-direction: column;
+`;
+
+const CategorySublistHeader = styled(ListSubheader)`
+    align-self: flex-end;
+`;
 
 const StyledListItemText = styled(ListItemText)`
     ${p => p.completed && `
